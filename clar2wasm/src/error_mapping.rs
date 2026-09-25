@@ -1,25 +1,41 @@
+#[cfg(feature = "runtime")]
 use clarity::types::StacksEpochId;
+#[cfg(feature = "runtime")]
 use clarity::vm::costs::CostErrors;
+#[cfg(feature = "runtime")]
 use clarity::vm::errors::{
     CommonCheckErrorKind, EarlyReturnError, RuntimeCheckErrorKind, RuntimeError, VmExecutionError,
     WasmError,
 };
+#[cfg(feature = "runtime")]
 use clarity::vm::types::ResponseData;
+#[cfg(feature = "runtime")]
 use clarity::vm::Value;
-use clarity_types::types::{ASCIIData, CharType, TypeSignature};
-use clarity_types::{ClarityName, ClarityTypeError};
+#[cfg(feature = "runtime")]
+use clarity_types::types::TypeSignature;
+use clarity_types::types::{ASCIIData, CharType};
+use clarity_types::ClarityName;
+#[cfg(feature = "runtime")]
+use clarity_types::ClarityTypeError;
 use walrus::InstrSeqBuilder;
+#[cfg(feature = "runtime")]
 use wasmi::{AsContext, AsContextMut, Instance, TrapCode};
 
+#[cfg(feature = "runtime")]
 use crate::initialize::ClarityWasmContext;
 use crate::wasm_generator::{GeneratorError, WasmGenerator};
+use crate::wasm_utils::get_global;
+#[cfg(feature = "runtime")]
 use crate::wasm_utils::{
-    get_global, read_bytes_from_wasm, read_from_wasm, read_from_wasm_indirect,
-    read_identifier_from_wasm, signature_from_string,
+    read_bytes_from_wasm, read_from_wasm, read_from_wasm_indirect, read_identifier_from_wasm,
+    signature_from_string,
 };
 
+#[cfg(feature = "runtime")]
 const LOG2_ERROR_MESSAGE: &str = "log2 must be passed a positive integer";
+#[cfg(feature = "runtime")]
 const SQRTI_ERROR_MESSAGE: &str = "sqrti must be passed a positive integer";
+#[cfg(feature = "runtime")]
 const POW_ERROR_MESSAGE: &str = "Power argument to (pow ...) must be a u32 integer";
 
 /// Represents various error conditions that can occur
@@ -158,6 +174,7 @@ impl From<i32> for ErrorMap {
     }
 }
 
+#[cfg(feature = "runtime")]
 fn referror_to_error<T>(referror: &T, placeholder_error: T) -> T {
     // SAFETY:
     //
@@ -176,6 +193,7 @@ fn referror_to_error<T>(referror: &T, placeholder_error: T) -> T {
     // held in the referror.
     unsafe { core::ptr::replace((referror as *const T) as *mut T, placeholder_error) }
 }
+#[cfg(feature = "runtime")]
 pub(crate) fn resolve_error<'a, 'b: 'a>(
     e: wasmi::Error,
     instance: Instance,
@@ -223,6 +241,7 @@ pub(crate) fn resolve_error<'a, 'b: 'a>(
 /// Returns a Clarity `Error` that corresponds to the runtime error encountered during
 /// WebAssembly execution.
 ///
+#[cfg(feature = "runtime")]
 fn from_runtime_error_code(
     instance: Instance,
     mut store: impl AsContextMut<Data = ClarityWasmContext<'static, 'static>>,
@@ -405,6 +424,7 @@ fn from_runtime_error_code(
 ///
 /// Returns the value of the global variable as an `i32`.
 ///
+#[cfg(feature = "runtime")]
 fn get_global_i32(instance: &Instance, store: &mut impl AsContextMut, name: &str) -> i32 {
     instance
         .get_global(&mut *store, name)
@@ -424,6 +444,7 @@ fn get_global_i32(instance: &Instance, store: &mut impl AsContextMut, name: &str
 /// A tuple `(expected, got)` where:
 /// - `expected` is the number of arguments expected.
 /// - `got` is the number of arguments actually received.
+#[cfg(feature = "runtime")]
 fn extract_expected_and_got(bytes: &[u8]) -> (usize, usize) {
     // Assuming the first 4 bytes represent the expected value
     let expected = u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]) as usize;
@@ -444,6 +465,7 @@ fn extract_expected_and_got(bytes: &[u8]) -> (usize, usize) {
 ///
 /// Returns a deserialized Clarity `Value` representing the short return value.
 ///
+#[cfg(feature = "runtime")]
 fn short_return_value(
     instance: &Instance,
     store: &mut impl AsContextMut<Data = ClarityWasmContext<'static, 'static>>,
@@ -481,6 +503,7 @@ fn short_return_value(
 /// # Returns
 ///
 /// A string representing the argument lengths.
+#[cfg(feature = "runtime")]
 fn get_runtime_error_arg_lengths(
     instance: &Instance,
     store: &mut impl AsContextMut,

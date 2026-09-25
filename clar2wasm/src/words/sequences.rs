@@ -1,4 +1,3 @@
-use clarity::vm::clarity_wasm::get_type_size;
 use clarity::vm::types::{
     FixedFunction, FunctionType, ListTypeData, SequenceSubtype, StringSubtype, TypeSignature,
 };
@@ -14,7 +13,7 @@ use crate::wasm_generator::{
     add_placeholder_for_clarity_type, clar2wasm_ty, drop_value, get_global, has_in_memory_type,
     ArgumentsExt, BorrowedLocal, GeneratorError, SequenceElementType, WasmGenerator,
 };
-use crate::wasm_utils::{get_type_in_memory_size, ArgumentCountCheck};
+use crate::wasm_utils::{get_type_in_memory_size, get_type_size, ArgumentCountCheck};
 use crate::words::{self, ComplexWord, Word};
 
 #[derive(Debug)]

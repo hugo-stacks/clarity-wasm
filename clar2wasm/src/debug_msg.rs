@@ -1,10 +1,12 @@
 #![allow(clippy::expect_used)]
 
+#[cfg(feature = "runtime")]
 use std::ops::Deref;
 use std::sync::{LazyLock, Mutex};
 
 static DEBUG_MSGS: LazyLock<Mutex<Vec<String>>> = LazyLock::new(Mutex::default);
 static LOCK_ERR: &str = "could not lock debug message mutex";
+#[cfg(feature = "runtime")]
 static MSG_ERR: &str = "could not find debug message";
 
 pub(crate) fn register(s: String) -> i32 {
@@ -14,6 +16,7 @@ pub(crate) fn register(s: String) -> i32 {
     id as i32
 }
 
+#[cfg(feature = "runtime")]
 pub(crate) fn recall<F: Fn(&str)>(id: i32, f: F) {
     f(DEBUG_MSGS
         .lock()

@@ -14,14 +14,18 @@ use crate::utils::annotate_types_for_contract_calls;
 mod cost;
 
 mod deserialize;
+#[cfg(feature = "runtime")]
 pub mod initialize;
+#[cfg(feature = "runtime")]
 pub mod linker;
 mod serialize;
 pub mod wasm_generator;
 pub mod wasm_utils;
 mod words;
 
+#[cfg(feature = "runtime")]
 pub mod datastore;
+#[cfg(feature = "runtime")]
 pub mod tools;
 
 mod copy;

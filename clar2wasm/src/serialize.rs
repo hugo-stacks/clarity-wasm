@@ -1,4 +1,3 @@
-use clarity::vm::clarity_wasm::{get_type_size, PRINCIPAL_BYTES, STANDARD_PRINCIPAL_BYTES};
 use clarity::vm::types::serialization::TypePrefix;
 use clarity::vm::types::{
     ListTypeData, SequenceSubtype, StringSubtype, TupleTypeSignature, TypeSignature,
@@ -7,6 +6,7 @@ use walrus::ir::{BinaryOp, IfElse, InstrSeqType, Loop, MemArg, StoreKind};
 use walrus::{InstrSeqBuilder, LocalId, MemoryId, ValType};
 
 use crate::wasm_generator::{clar2wasm_ty, GeneratorError, WasmGenerator};
+use crate::wasm_utils::{get_type_size, PRINCIPAL_BYTES, STANDARD_PRINCIPAL_BYTES};
 
 impl WasmGenerator {
     /// Serialize an integer (`int` or `uint`) to memory using consensus

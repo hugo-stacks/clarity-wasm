@@ -5,23 +5,35 @@ edition = "2021"
 build = "build.rs"
 
 [dependencies]
-clap = { version = "4.3.17", features = ["derive"] }
-regex = "1.9.1"
-walrus = "0.20.1"
+clap = { version = "4.3.17", features = ["derive"], optional = true }
+regex = { version = "1.9.1", optional = true }
+walrus = { version = "0.20.1", default-features = false }
 lazy_static = "1.4.0"
-wasmi = { version = "2.0.0", features = ["simd"] }
-sha2 = { version = "0.10.7" }
-chrono = { version = "0.4.20" }
-rusqlite = { version = "0.31.0" }
+wasmi = { version = "2.0.0", features = ["simd"], optional = true }
+sha2 = { version = "0.10.7", optional = true }
+chrono = { version = "0.4.20", optional = true }
+rusqlite = { version = "0.31.0", optional = true }
 
-clarity = { git = "https://github.com/melcar-stacks/stacks-core", branch = "wasmi" }
-stacks-common = { git = "https://github.com/melcar-stacks/stacks-core", branch = "wasmi" }
-clarity-types = { git = "https://github.com/melcar-stacks/stacks-core", branch = "wasmi" }
+clarity = { git = "https://github.com/melcar-stacks/stacks-core", branch = "wasmi", default-features = false }
+stacks-common = { git = "https://github.com/melcar-stacks/stacks-core", branch = "wasmi", default-features = false }
+clarity-types = { git = "https://github.com/melcar-stacks/stacks-core", branch = "wasmi", default-features = false }
 
 [build-dependencies]
 wat = "1.0.74"
 
 [features]
+default = ["runtime"]
+runtime = [
+  "dep:clap",
+  "dep:regex",
+  "dep:wasmi",
+  "dep:sha2",
+  "dep:chrono",
+  "dep:rusqlite",
+  "clarity/default",
+  "stacks-common/default",
+  "clarity-types/default",
+]
 flamegraph = []
 pb = []
 
@@ -60,14 +72,17 @@ path = "src/lib.rs"
 [[bin]]
 name = "clar2wasm"
 path = "src/bin/main.rs"
+required-features = ["runtime"]
 
 [[bin]]
 name = "crosscheck"
 path = "src/bin/crosscheck.rs"
+required-features = ["runtime"]
 
 [[bench]]
 name = "comparison"
 harness = false
+required-features = ["runtime"]
 
 [lints.clippy]
 result_large_err = "allow"

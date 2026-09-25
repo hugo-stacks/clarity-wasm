@@ -1,20 +1,29 @@
 #![allow(non_camel_case_types)]
 
 use clarity::vm::ast::build_ast;
+#[cfg(feature = "runtime")]
 use clarity::vm::errors::{VmExecutionError, WasmError};
+#[cfg(feature = "runtime")]
 use clarity::vm::types::signatures::CallableSubtype;
+#[cfg(feature = "runtime")]
 use clarity::vm::types::{
     ASCIIData, BuffData, BufferLength, CallableData, CharType, ListData, OptionalData,
-    PrincipalData, QualifiedContractIdentifier, ResponseData, SequenceData, SequenceSubtype,
-    SequencedValue, StandardPrincipalData, StringSubtype, TraitIdentifier, TupleData,
-    TypeSignature, TypeSignatureExt,
+    PrincipalData, ResponseData, SequenceData, SequencedValue, StandardPrincipalData, TupleData,
 };
-use clarity::vm::{ClarityName, ClarityVersion, ContractName, Value};
+use clarity::vm::types::{
+    QualifiedContractIdentifier, SequenceSubtype, StringSubtype, TraitIdentifier, TypeSignature,
+    TypeSignatureExt,
+};
+use clarity::vm::ClarityVersion;
+#[cfg(feature = "runtime")]
+use clarity::vm::{ClarityName, ContractName, Value};
 use stacks_common::types::StacksEpochId;
 use walrus::{GlobalId, InstrSeqBuilder};
+#[cfg(feature = "runtime")]
 use wasmi::{AsContext, AsContextMut, Memory, Val, ValType};
 
 use crate::error_mapping::ErrorMap;
+#[cfg(feature = "runtime")]
 use crate::initialize::ClarityWasmContext;
 use crate::wasm_generator::{GeneratorError, WasmGenerator};
 
@@ -84,6 +93,7 @@ pub const PRINCIPAL_BYTES_MAX: usize = STANDARD_PRINCIPAL_BYTES + CONTRACT_NAME_
 /// - `store` is the Wasm store.
 ///
 /// Returns the Clarity `Value` and the number of Wasm `Val`s that were used.
+#[cfg(feature = "runtime")]
 pub fn wasm_to_clarity_value(
     type_sig: &TypeSignature,
     value_index: usize,
@@ -342,6 +352,7 @@ pub fn wasm_to_clarity_value(
 /// In-memory values require one extra level
 /// of indirection, so this function will read the offset and length from the
 /// memory, then read the actual value.
+#[cfg(feature = "runtime")]
 pub fn read_from_wasm_indirect(
     memory: Memory,
     store: &mut impl AsContextMut<Data = ClarityWasmContext<'static, 'static>>,
@@ -362,6 +373,7 @@ pub fn read_from_wasm_indirect(
 
 /// Read a value from the Wasm memory at `offset` with `length`, given the
 /// provided Clarity `TypeSignature`.
+#[cfg(feature = "runtime")]
 pub fn read_from_wasm(
     memory: Memory,
     store: &mut impl AsContextMut<Data = ClarityWasmContext<'static, 'static>>,
@@ -612,6 +624,7 @@ pub fn read_from_wasm(
     }
 }
 
+#[cfg(feature = "runtime")]
 pub fn read_indirect_offset_and_length(
     memory: Memory,
     store: &mut impl AsContextMut,
@@ -727,6 +740,7 @@ pub fn get_type_in_memory_size(ty: &TypeSignature, include_repr: bool) -> i32 {
 }
 
 /// Push a placeholder value for Wasm type `ty` onto the data stack.
+#[cfg(feature = "runtime")]
 pub fn placeholder_for_type(ty: ValType) -> Val {
     Val::default_for_ty(ty)
 }
@@ -738,6 +752,7 @@ pub fn placeholder_for_type(ty: ValType) -> Val {
 /// to the memory at `in_mem_offset`, and if `include_repr` is true, the offset
 /// and length of the value will be written to the memory at `offset`.
 /// Returns the number of bytes written at `offset` and at `in_mem_offset`.
+#[cfg(feature = "runtime")]
 pub fn write_to_wasm(
     mut store: impl AsContextMut<Data = ClarityWasmContext<'static, 'static>>,
     memory: Memory,
@@ -1118,6 +1133,7 @@ pub fn write_to_wasm(
     }
 }
 
+#[cfg(feature = "runtime")]
 pub fn value_as_bool(value: &Value) -> Result<bool, VmExecutionError> {
     match value {
         Value::Bool(b) => Ok(*b),
@@ -1125,6 +1141,7 @@ pub fn value_as_bool(value: &Value) -> Result<bool, VmExecutionError> {
     }
 }
 
+#[cfg(feature = "runtime")]
 pub fn value_as_i128(value: &Value) -> Result<i128, VmExecutionError> {
     match value {
         Value::Int(n) => Ok(*n),
@@ -1132,6 +1149,7 @@ pub fn value_as_i128(value: &Value) -> Result<i128, VmExecutionError> {
     }
 }
 
+#[cfg(feature = "runtime")]
 pub fn value_as_u128(value: &Value) -> Result<u128, VmExecutionError> {
     match value {
         Value::UInt(n) => Ok(*n),
@@ -1139,6 +1157,7 @@ pub fn value_as_u128(value: &Value) -> Result<u128, VmExecutionError> {
     }
 }
 
+#[cfg(feature = "runtime")]
 pub fn value_as_principal(value: &Value) -> Result<&PrincipalData, VmExecutionError> {
     match value {
         Value::Principal(p) => Ok(p),
@@ -1146,6 +1165,7 @@ pub fn value_as_principal(value: &Value) -> Result<&PrincipalData, VmExecutionEr
     }
 }
 
+#[cfg(feature = "runtime")]
 pub fn value_as_buffer(value: Value) -> Result<BuffData, VmExecutionError> {
     match value {
         Value::Sequence(SequenceData::Buffer(buffdata)) => Ok(buffdata),
@@ -1153,6 +1173,7 @@ pub fn value_as_buffer(value: Value) -> Result<BuffData, VmExecutionError> {
     }
 }
 
+#[cfg(feature = "runtime")]
 pub fn value_as_optional(value: &Value) -> Result<&OptionalData, VmExecutionError> {
     match value {
         Value::Optional(opt_data) => Ok(opt_data),
@@ -1160,6 +1181,7 @@ pub fn value_as_optional(value: &Value) -> Result<&OptionalData, VmExecutionErro
     }
 }
 
+#[cfg(feature = "runtime")]
 pub fn value_as_response(value: &Value) -> Result<&ResponseData, VmExecutionError> {
     match value {
         Value::Response(res_data) => Ok(res_data),
@@ -1167,6 +1189,7 @@ pub fn value_as_response(value: &Value) -> Result<&ResponseData, VmExecutionErro
     }
 }
 
+#[cfg(feature = "runtime")]
 pub fn value_as_string_ascii(value: Value) -> Result<ASCIIData, VmExecutionError> {
     match value {
         Value::Sequence(SequenceData::String(CharType::ASCII(string_data))) => Ok(string_data),
@@ -1174,6 +1197,7 @@ pub fn value_as_string_ascii(value: Value) -> Result<ASCIIData, VmExecutionError
     }
 }
 
+#[cfg(feature = "runtime")]
 pub fn value_as_tuple(value: &Value) -> Result<&TupleData, VmExecutionError> {
     match value {
         Value::Tuple(d) => Ok(d),
@@ -1181,6 +1205,7 @@ pub fn value_as_tuple(value: &Value) -> Result<&TupleData, VmExecutionError> {
     }
 }
 
+#[cfg(feature = "runtime")]
 pub fn value_as_list(value: &Value) -> Result<&ListData, VmExecutionError> {
     match value {
         Value::Sequence(SequenceData::List(list_data)) => Ok(list_data),
@@ -1189,6 +1214,7 @@ pub fn value_as_list(value: &Value) -> Result<&ListData, VmExecutionError> {
 }
 
 /// Read bytes from the WASM memory at `offset` with `length`
+#[cfg(feature = "runtime")]
 pub fn read_bytes_from_wasm(
     memory: Memory,
     store: &mut impl AsContextMut,
@@ -1203,6 +1229,7 @@ pub fn read_bytes_from_wasm(
 }
 
 /// Read an identifier (string) from the WASM memory at `offset` with `length`.
+#[cfg(feature = "runtime")]
 pub fn read_identifier_from_wasm(
     memory: Memory,
     store: &mut impl AsContextMut,
@@ -1234,6 +1261,7 @@ pub fn is_in_memory_type(ty: &TypeSignature) -> bool {
 }
 
 #[allow(clippy::unimplemented)]
+#[cfg(feature = "runtime")]
 fn clar2wasm_ty(ty: &TypeSignature) -> Vec<ValType> {
     match ty {
         TypeSignature::NoType => vec![ValType::I32], // TODO: issue #445. Can this just be empty?
@@ -1303,6 +1331,7 @@ pub fn trait_identifier_as_bytes(
 
 /// Tries to deserialize bytes into a [TraitIdentifier].
 /// This is the opposite of the function [trait_identifier_as_bytes].
+#[cfg(feature = "runtime")]
 pub fn trait_identifier_from_bytes(bytes: &[u8]) -> Result<TraitIdentifier, VmExecutionError> {
     let not_enough_bytes = || {
         VmExecutionError::Wasm(WasmError::Expect(
@@ -1339,6 +1368,7 @@ pub fn trait_identifier_from_bytes(bytes: &[u8]) -> Result<TraitIdentifier, VmEx
     Ok(TraitIdentifier::new(issuer, contract_name, trait_name))
 }
 
+#[cfg(feature = "runtime")]
 pub fn signature_from_string(
     val: &str,
     version: ClarityVersion,
@@ -1361,6 +1391,28 @@ pub fn signature_from_string(
         expr,
         &mut (),
     )?)
+}
+
+#[cfg(not(feature = "runtime"))]
+pub fn signature_from_string(
+    val: &str,
+    version: ClarityVersion,
+    epoch: StacksEpochId,
+) -> Result<TypeSignature, String> {
+    let expr = build_ast(
+        &QualifiedContractIdentifier::transient(),
+        val,
+        &mut (),
+        version,
+        epoch,
+    )
+    .map_err(|e| format!("Build Ast Error: {e}"))?
+    .expressions;
+    let expr = expr
+        .first()
+        .ok_or_else(|| "Invalid type description".to_owned())?;
+    TypeSignature::parse_type_repr(StacksEpochId::latest(), expr, &mut ())
+        .map_err(|e| format!("{e:?}"))
 }
 
 pub fn get_global(module: &walrus::Module, name: &str) -> Result<GlobalId, GeneratorError> {

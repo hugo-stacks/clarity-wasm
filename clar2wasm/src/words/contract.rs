@@ -1,7 +1,6 @@
 use std::cell::Cell;
 
 use clarity::types::StacksEpochId;
-use clarity::vm::clarity_wasm::get_type_size;
 use clarity::vm::types::signatures::CallableSubtype;
 use clarity::vm::types::{PrincipalData, TypeSignature};
 use clarity::vm::{ClarityName, SymbolicExpression, SymbolicExpressionType, Value};
@@ -14,7 +13,7 @@ use crate::cost::WordCharge;
 use crate::wasm_generator::{
     add_placeholder_for_clarity_type, clar2wasm_ty, ArgumentsExt, GeneratorError, WasmGenerator,
 };
-use crate::wasm_utils::ArgumentCountCheck;
+use crate::wasm_utils::{get_type_size, ArgumentCountCheck};
 use crate::words::SimpleWord;
 
 // The WASM local holding the ExternRef for the current `as-contract?`
